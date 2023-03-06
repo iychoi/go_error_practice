@@ -28,6 +28,7 @@ func test_basic() {
 	})
 
 	// err must be an instance of error
+	// calling layer1_2 --> layer1_1 --> AppErr
 	err := layer1_2()
 
 	// test logger
@@ -81,18 +82,22 @@ func layer1_2() error {
 	return nil
 }
 
-func layer2_2() error {
-	err := layer2_1()
-	if err != nil {
-		return xerrors.Errorf("layer2 failed: %w", err)
-	}
-	return nil
-}
-
 func layer1_1() error {
 	err := raise_base_error()
 	if err != nil {
 		return xerrors.Errorf("layer1 failed: %w", err)
+	}
+	return nil
+}
+
+func raise_base_error() error {
+	return AppErr
+}
+
+func layer2_2() error {
+	err := layer2_1()
+	if err != nil {
+		return xerrors.Errorf("layer2 failed: %w", err)
 	}
 	return nil
 }
@@ -103,10 +108,6 @@ func layer2_1() error {
 		return xerrors.Errorf("layer1 failed: %w", err)
 	}
 	return nil
-}
-
-func raise_base_error() error {
-	return AppErr
 }
 
 func raise_custom_error() error {
