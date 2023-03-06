@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	_ "net/http/pprof"
@@ -19,6 +20,8 @@ func main() {
 	test_basic()
 	fmt.Printf("\n\n")
 	test_custom_error()
+	fmt.Printf("\n\n")
+	test_json()
 }
 
 func test_basic() {
@@ -72,6 +75,17 @@ func test_custom_error() {
 	} else {
 		fmt.Printf("err is not CustomError\n")
 	}
+}
+
+func test_json() {
+	// err must be an instance of error
+	err := layer2_2()
+
+	errBytes, _ := json.Marshal(err)
+	fmt.Printf("err json with default json.Marshal\n%s\n", string(errBytes))
+
+	errBytes, _ = EncodeErrorToJSON(err)
+	fmt.Printf("err json with custom marshaller\n%s\n", string(errBytes))
 }
 
 func layer1_2() error {
